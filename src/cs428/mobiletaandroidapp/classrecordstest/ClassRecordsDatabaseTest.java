@@ -1,10 +1,21 @@
 package cs428.mobiletaandroidapp.classrecordstest;
 
+import java.util.ArrayList;
+
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.test.ActivityInstrumentationTestCase2;
 import cs428.mobiletaandroidapp.classactivity.ClassRecords;
 import cs428.mobiletaandroidapp.classactivity.ClassRecordsDatabaseHandler;
 import cs428.mobiletaandroidapp.student.ViewStudentListActivity;
 
+/**
+ * 
+ * Test Cases for ClassRecordsDatabaseHandler
+ * 
+ * @author Junhyun Park
+ *
+ */
 public class ClassRecordsDatabaseTest extends
 	ActivityInstrumentationTestCase2<ViewStudentListActivity>  {
 
@@ -29,9 +40,15 @@ public class ClassRecordsDatabaseTest extends
 		super.tearDown();
 	}
 
+	/**
+	 * Tests adding function of the ClassRecords Database.
+	 * 
+	 * possible cases: add invalid record
+	 */
 	public void testAddRecord() {
-		ClassRecords testRecord;
+		// remember current records count.
 		int recordCount = dbHandler.getRecordsCount();
+		// it will add 3 dummy records.
 		int[] recordId = new int[3];
 
 		for (int i = 0; i < 3; i++) {
@@ -40,7 +57,7 @@ public class ClassRecordsDatabaseTest extends
 			recordId[i] = dbHandler.addRecord(record);
 			assertFalse("Returned Row ID should not be -1", recordId[i] == -1);
 
-			testRecord = dbHandler.getRecord(recordId[i]);
+			ClassRecords testRecord = dbHandler.getRecord(recordId[i]);
 			assertTrue(
 					"Confirm that this speific record is added to the Database",
 					record.equals(testRecord));
@@ -54,7 +71,32 @@ public class ClassRecordsDatabaseTest extends
 			dbHandler.deleteRecord(recordId[i]);
 	}
 	
-	public void testUpdateStudent() {
+	public void testGetRecord() {
+		// get Record by ID.
+		ClassRecords record = new ClassRecords();
+		int recordId = dbHandler.addRecord(record);
+		
+		assertTrue("returned id should match the remembered one", recordId == dbHandler.getRecord(recordId).getId());
+		
+		dbHandler.deleteRecord(recordId);
+		
+		// get Record by date and student ID.
+		int date = 20131126;
+		int id = 379;
+		
+		record = new ClassRecords();
+		record.setDate(date);
+		record.setStudentId(id);
+		
+		recordId = dbHandler.addRecord(record);
+		
+		assertTrue("returned id should match the remembered one", recordId == dbHandler.getRecord(date, id).getId());
+		
+		dbHandler.deleteRecord(recordId);
+	}
+	
+	public void testUpdateClassRecord() {
+		// add a dummy record to be tested
 		ClassRecords record = new ClassRecords();
 		ClassRecords testRecord;
 		dbHandler.addRecord(record);
@@ -77,6 +119,10 @@ public class ClassRecordsDatabaseTest extends
 		dbHandler.deleteRecord(record.getId());
 	}
 	
+	/**
+	 * Check if it deletes the specified record.
+	 * It does not affect anything if it tries to delete invalid record.
+	 */ 
 	public void testDeleteClassRecords() {
 		ClassRecords record = new ClassRecords();
 		ClassRecords testRecord;
@@ -98,5 +144,46 @@ public class ClassRecordsDatabaseTest extends
 		assertTrue(
 				"Trying to delete record with unvalid id should affect no row",
 				dbHandler.deleteRecord(-1) == 0);
+	}
+	
+
+	public void testGetAllRecords() {
+		int recordCount = dbHandler.getRecordsCount();
+		int[] recordId = new int[3];
+
+		// add few more test dummies
+		for (int i = 0; i < 3; i++) {
+			ClassRecords record = new ClassRecords();
+
+			recordId[i] = dbHandler.addRecord(record);
+			recordCount++;
+		}
+
+		assertTrue("See if student count is updated well",
+				dbHandler.getRecordsCount() == recordCount);
+
+		ArrayList<ClassRecords> recordList = (ArrayList<ClassRecords>) dbHandler
+				.getAllRecords();
+
+		SQLiteDatabase db = dbHandler.getWritableDatabase();
+		Cursor cursor = db.query("classRecords", null, null, null, null, null,
+				null);
+
+		assertTrue("List should not be empty and cursor should be returned",
+				cursor.moveToFirst());
+
+		// compare and verify that every single records are loaded correctly
+		for (int i = 0; i < recordCount; i++) {
+			ClassRecords record = recordList.get(i);
+
+			ClassRecords testRecord = dbHandler.getRecord(record.getId());
+			assertTrue(
+					"Confirm that the record with the given ID is correctly returned",
+					testRecord != null);
+
+			assertTrue(
+					"Confirm that this speific record is added to the Database",
+					record.equals(testRecord));
+		}
 	}
 }
