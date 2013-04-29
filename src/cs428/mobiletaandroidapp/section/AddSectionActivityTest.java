@@ -103,12 +103,12 @@ public class AddSectionActivityTest extends
 		int count = tryAddingGetCounts("TAB ", "TAB ");
 		assertEquals(count, 0);
 		sendKeys(KeyEvent.KEYCODE_BACK);
-		sendKeys("TAB TAB TAB TAB ");
+		sendKeys("TAB TAB TAB ");
 		
 		count = tryAddingGetCounts(NAME_FIELD, "TAB ");
 		assertEquals(count, 0);
 		sendKeys(KeyEvent.KEYCODE_BACK);
-		sendKeys("TAB TAB TAB TAB ");
+		sendKeys("TAB TAB TAB ");
 		
 		count = tryAddingGetCounts("TAB ", COURSE_FIELD);
 		assertEquals(count, 0);

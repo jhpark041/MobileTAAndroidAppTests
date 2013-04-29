@@ -121,10 +121,10 @@ public class StudentDbHandlerTest extends AndroidTestCase {
 		do {
 			count = dbHandler.getStudentsWithSectionID(SectionID).size();
 			if(count != 0)
-				count = generator.nextInt();
+				SectionID = generator.nextInt();
 		} while (count != 0);
 		
-		return count;
+		return SectionID;
 	}
 	
 	public void testDeleteStudentWithSectionID() {

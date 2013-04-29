@@ -3,6 +3,8 @@ package cs428.mobiletaandroidapp.group;
 import java.util.ArrayList;
 import java.util.Random;
 
+import cs428.mobiletaandroidapp.group.Group;
+
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
 
@@ -51,15 +53,17 @@ public class GroupDbHandlerTest extends AndroidTestCase {
 		int[] groupId = new int[NUM_OF_DUMMIES];
 
 		for (int i = 0; i < NUM_OF_DUMMIES; i++) {
+			String testName = "Name" + generator.nextInt();
 			int testSectionID = generator.nextInt();
 			int testColor = generator.nextInt();
 			
-			Group group = new Group(testSectionID, testColor);
+			Group group = new Group(testName, testSectionID, testColor);
 
 			groupId[i] = dbHandler.insertGroup(group);
 			assertFalse(groupId[i] == -1);
 
 			Group testGroup = dbHandler.getGroupWithRowID(groupId[i]);
+			assertTrue(group.getName().equals(testGroup.getName()));
 			assertEquals(group.getSectionID(), testGroup.getSectionID());
 			assertEquals(group.getColor(), testGroup.getColor());
 		}
@@ -69,10 +73,11 @@ public class GroupDbHandlerTest extends AndroidTestCase {
 	}
 	
 	public void testDeleteGroup() {
+		String testName = "Name" + generator.nextInt();
 		int testSectionID = generator.nextInt();
 		int testColor = generator.nextInt();
 		
-		Group group = new Group(testSectionID, testColor);
+		Group group = new Group(testName, testSectionID, testColor);
 		
 		int rowID = dbHandler.insertGroup(group);
 		Group testGroup = dbHandler.getGroupWithRowID(rowID);
@@ -83,22 +88,64 @@ public class GroupDbHandlerTest extends AndroidTestCase {
 		testGroup = dbHandler.getGroupWithRowID(rowID);
 		assertNull(testGroup);
 	}
-
-	public void testGetAllGroups() {
-		ArrayList<Group> groupList;
+	
+	private int getUniqueSectionID() {
+		int count;
+		int SectionID = generator.nextInt();
+		do {
+			count = dbHandler.getGroupsInSection(SectionID).size();
+			if(count != 0)
+				SectionID = generator.nextInt();
+		} while (count != 0);
+		
+		return SectionID;
+	}
+	
+	public void testDeleteGroupInSection() {
 		int[] groupId = new int[NUM_OF_DUMMIES];
-		int beforeCount = dbHandler.getAllGroups().size();
-
+		int testSectionID = getUniqueSectionID();
+		
 		for (int i = 0; i < NUM_OF_DUMMIES; i++) {
-			int testSectionID = generator.nextInt();
+			String testName = "Name" + generator.nextInt();
 			int testColor = generator.nextInt();
 			
-			Group group = new Group(testSectionID, testColor);
+			Group group = new Group(testName, testSectionID, testColor);
+			
+			int rowID = dbHandler.insertGroup(group);
+			Group testGroup = dbHandler.getGroupWithRowID(rowID);
+			assertNotNull(testGroup);
+		}
+		
+		int groupsCount = dbHandler.getGroupsInSection(testSectionID).size();
+		assertEquals(NUM_OF_DUMMIES, groupsCount);
+
+		dbHandler.deleteGroupsInSection(testSectionID);
+		
+		groupsCount = dbHandler.getGroupsInSection(testSectionID).size();
+		assertEquals(0, groupsCount);
+
+		for (int i = 0; i < NUM_OF_DUMMIES; i++) {
+			Group testGroup = dbHandler.getGroupWithRowID(groupId[i]);
+			assertNull(testGroup);
+		}
+	}
+
+	public void testGetGroupsInSection() {
+		ArrayList<Group> groupList;
+		int[] groupId = new int[NUM_OF_DUMMIES];
+		int testSectionID = generator.nextInt();
+		int beforeCount = dbHandler.getGroupsInSection(testSectionID).size();
+
+		for (int i = 0; i < NUM_OF_DUMMIES; i++) {
+			String testName = "Name" + generator.nextInt();
+			int testColor = generator.nextInt();
+			
+			Group group = new Group(testName, testSectionID, testColor);
 
 			groupId[i] = dbHandler.insertGroup(group);
 		}
 
-		groupList = dbHandler.getAllGroups();
+		groupList = dbHandler.getGroupsInSection(testSectionID);
 		int afterCount = groupList.size();
 		
 		assertEquals(beforeCount + NUM_OF_DUMMIES, afterCount);
@@ -107,6 +154,7 @@ public class GroupDbHandlerTest extends AndroidTestCase {
 			Group group = groupList.get(i);
 			Group testGroup = dbHandler.getGroupWithRowID(group.getId());
 			assertNotNull(testGroup);
+			assertTrue(group.getName().equals(testGroup.getName()));
 			assertEquals(group.getSectionID(), testGroup.getSectionID());
 			assertEquals(group.getColor(), testGroup.getColor());
 		}

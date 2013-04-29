@@ -143,10 +143,10 @@ public class StudentAttendanceDbHandlerTest extends AndroidTestCase {
 		do {
 			count = dbHandler.getAllStudentAttendances(StudentID).size();
 			if(count != 0)
-				count = generator.nextInt();
+				StudentID = generator.nextInt();
 		} while (count != 0);
 		
-		return count;
+		return StudentID;
 	}
 	
 	public void testGetAllStudentAttendances() {
@@ -159,7 +159,7 @@ public class StudentAttendanceDbHandlerTest extends AndroidTestCase {
 			int testStatus= generator.nextInt();
 			
 			StudentAttendance studentAttendance = new StudentAttendance(testParticipation, testStatus);
-			studentAttendance.setId(testStudentID);
+			studentAttendance.setStudentID(testStudentID);
 
 			studentAttendanceId[i] = dbHandler.insertStudentAttendance(studentAttendance);
 		}

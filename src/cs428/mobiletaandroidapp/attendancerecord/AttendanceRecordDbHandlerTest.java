@@ -95,10 +95,10 @@ public class AttendanceRecordDbHandlerTest extends AndroidTestCase {
 		do {
 			count = dbHandler.getAllAttendanceRecordsInSection(sectionID).size();
 			if(count != 0)
-				count = generator.nextInt();
+				sectionID = generator.nextInt();
 		} while (count != 0);
 		
-		return count;
+		return sectionID;
 	}
 	
 	public void testGetAllAttendanceRecords() {

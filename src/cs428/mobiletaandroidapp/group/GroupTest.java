@@ -30,33 +30,51 @@ public class GroupTest extends AndroidTestCase  {
 
 	public void testConstructorOne() {
 		int testSectionID = generator.nextInt();
-		int testColor = generator.nextInt();
 		
-		Group group = new Group(testSectionID, testColor);
+		Group group = new Group(testSectionID);
 		
 		assertNotNull(group);
 		
 		int sectionID = group.getSectionID();
+		
+		assertEquals(testSectionID, sectionID);
+	}
+	
+	public void testConstructorTwo() {
+		String testName = "Name" + generator.nextInt();
+		int testSectionID = generator.nextInt();
+		int testColor = generator.nextInt();
+		
+		Group group = new Group(testName, testSectionID, testColor);
+		
+		assertNotNull(group);
+		
+		String name = group.getName();
+		int sectionID = group.getSectionID();
 		int color = group.getColor();
 		
+		assertTrue(testName.equals(name));
 		assertEquals(testSectionID, sectionID);
 		assertEquals(testColor, color);
 	}
 	
-	public void testConstructorTwo() {
+	public void testConstructorThree() {
 		int testID = generator.nextInt();
+		String testName = "Name" + generator.nextInt();
 		int testSectionID = generator.nextInt();
 		int testColor = generator.nextInt();
 		
-		Group group = new Group(testID, testSectionID, testColor);
+		Group group = new Group(testID, testName, testSectionID, testColor);
 		
 		assertNotNull(group);
 		
 		int id = group.getId();
+		String name = group.getName();
 		int sectionID = group.getSectionID();
 		int color = group.getColor();
 		
 		assertEquals(testID, id);
+		assertTrue(testName.equals(name));
 		assertEquals(testSectionID, sectionID);
 		assertEquals(testColor, color);
 	}
