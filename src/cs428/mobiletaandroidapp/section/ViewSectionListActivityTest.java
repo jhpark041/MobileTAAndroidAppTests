@@ -64,7 +64,8 @@ public class ViewSectionListActivityTest extends
 	}
 
 	public void testNavigateListUI() {
-		sendKeys(KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_BACK);
+		sendKeys(KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_ENTER);
+		sendKeys(KeyEvent.KEYCODE_BACK);
 		
 		for (int i = 1; i <= TEST_SECTIONS_NUM + originalSectionCount; i++) {
 			sendKeys(KeyEvent.KEYCODE_DPAD_DOWN);
@@ -88,7 +89,8 @@ public class ViewSectionListActivityTest extends
 	}
 	
 	public void testDeleteFromListUI() {
-		sendKeys(KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_BACK);
+		sendKeys(KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_ENTER);
+		sendKeys(KeyEvent.KEYCODE_BACK);
 		
 		sendKeys("TAB ");
 		sendKeys(KeyEvent.KEYCODE_ENTER);
